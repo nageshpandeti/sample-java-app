@@ -1,52 +1,60 @@
+package com.example;
+
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Random;
 
-public class TestVulnerabilities {
+public class VulnerableApp {
 
-    // Hardcoded password (Rule: S2068)
-    private static final String DB_PASSWORD = "P@ssw0rd123";
+    // Hardcoded credentials (S2068)
+    private static final String PASSWORD = "SuperSecret123!";
 
     public static void main(String[] args) {
-        TestVulnerabilities tv = new TestVulnerabilities();
-        tv.testSQLInjection("105 OR 1=1");
-        tv.testCommandInjection("hello; rm -rf /");
-        tv.testWeakRandom();
+        VulnerableApp app = new VulnerableApp();
+        app.sqlInjection("101 OR 1=1");
+        app.commandInjection("hello; rm -rf /");
+        app.weakRandom();
+        app.insecureHashing();
     }
 
-    // SQL Injection vulnerability (Rule: S2077)
-    public void testSQLInjection(String userInput) {
+    // SQL Injection (S3649, S2077)
+    public void sqlInjection(String input) {
         try {
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:h2:mem:testdb", "sa", DB_PASSWORD);
+            Connection conn = DriverManager.getConnection("jdbc:h2:mem:test", "sa", PASSWORD);
             Statement stmt = conn.createStatement();
 
-            // Vulnerable SQL query using user input directly
-            String query = "SELECT * FROM users WHERE id = '" + userInput + "'";
+            String query = "SELECT * FROM users WHERE id = '" + input + "'";
             System.out.println("Executing query: " + query);
 
             ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                System.out.println("User: " + rs.getString("name"));
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Command Injection (Rule: S2076)
-    public void testCommandInjection(String input) {
+    // Command Injection (S2076)
+    public void commandInjection(String input) {
         try {
-            // Vulnerable: passing user input to OS command
             Runtime.getRuntime().exec("echo " + input);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // Predictable random numbers (Rule: S2245)
-    public void testWeakRandom() {
-        Random rand
+    // Weak random number generation (S2245)
+    public void weakRandom() {
+        Random r = new Random();
+        System.out.println("Weak Token: " + r.nextInt());
+    }
+
+    // Insecure hashing (S4790)
+    public void insecureHashing() {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5"); // Weak hashing
+            md.update("password".getBytes());
+            System.out.println("MD5 Hash: " + new String(md.digest()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
