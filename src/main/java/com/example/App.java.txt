@@ -1,7 +1,56 @@
 package com.example;
 
+import java.io.*;
+import java.sql.*;
+import java.util.Scanner;
+
 public class App {
+
     public static void main(String[] args) {
-        System.out.println("Hello from CI/CD Pipeline!");
+        Scanner scanner = new Scanner(System.in);
+
+        // Vulnerability 1: Hardcoded credentials
+        String url = "jdbc:mysql://localhost:3306/testdb";
+        String user = "root";
+        String pass = "password";
+
+        System.out.println("Enter username to search:");
+        String inputUser = scanner.nextLine();
+
+        try {
+            // Vulnerability 2: SQL Injection
+            String query = "SELECT * FROM users WHERE username = '" + inputUser + "'";
+
+            Connection conn = DriverManager.getConnection(url, user, pass);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                System.out.println("User found: " + rs.getString("username"));
+            }
+
+        } catch (Exception e) {
+            // Vulnerability 3: Exposing internal error stack traces
+            e.printStackTrace();
+        }
+
+        System.out.println("Enter filename:");
+        String filename = scanner.nextLine();
+
+        try {
+            // Vulnerability 4: Path Traversal
+            File f = new File("/var/data/" + filename);
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+            System.out.println("File content: " + reader.readLine());
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Vulnerability 5: Weak random
+        int token = (int)(Math.random() * 9999);
+        System.out.println("Your token: " + token);
+
+        scanner.close();
     }
 }
