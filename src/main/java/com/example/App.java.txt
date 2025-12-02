@@ -1,61 +1,6 @@
-package com.example;
-
-import java.io.IOException;
-import java.sql.*;
-import java.util.Random;
-import java.security.MessageDigest;
-
-public class VulnerableApp {
-
-    // Hardcoded Password (S2068)
-    private static final String SECRET = "MySecretPassword123";
-
+// App.java
+public class App {
     public static void main(String[] args) {
-        VulnerableApp app = new VulnerableApp();
-        app.sqlInjection("105 OR 1=1");
-        app.commandInjection("hello; rm -rf /");
-        app.weakRandom();
-        app.insecureHash();
-    }
-
-    // SQL Injection (S2077)
-    public void sqlInjection(String input) {
-        try {
-            Connection conn = DriverManager.getConnection(
-                "jdbc:h2:mem:testdb", "sa", SECRET);
-            Statement stmt = conn.createStatement();
-
-            // VULNERABLE
-            String query = "SELECT * FROM users WHERE id = '" + input + "'";
-            stmt.executeQuery(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Command Injection (S2076)
-    public void commandInjection(String input) {
-        try {
-            Runtime.getRuntime().exec("echo " + input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Weak random generator (S2245)
-    public void weakRandom() {
-        Random r = new Random();
-        System.out.println("Weak token: " + r.nextInt());
-    }
-
-    // Insecure hashing: MD5 (S4790)
-    public void insecureHash() {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update("password".getBytes());
-            System.out.println(md.digest());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("Hello, World!");
     }
 }
