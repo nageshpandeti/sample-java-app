@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sample-app
-          image: nageshpandeti409/practice:45   # fixed image name
+          image: nageshpandeti409/practice:50   # fixed image name
           ports:
             - containerPort: 8080
       imagePullSecrets:
