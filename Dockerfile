@@ -1,3 +1,3 @@
-FROM openjdk:17-jdk-slim-bullseye
+FROM openjdk:17-jdk
 COPY target/sample-java-app-1.0-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
