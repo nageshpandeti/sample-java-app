@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: sample-app
-          image: nageshpandeti409/nageshpandeti409/practice:25
+          image: nageshpandeti409/nageshpandeti409/practice:36
           ports:
             - containerPort: 8080
